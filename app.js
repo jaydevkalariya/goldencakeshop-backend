@@ -38,7 +38,7 @@ app.use("/api/v1/users", userRouter);
 app.use("/api/v1/cakes", cakeRouter);
 app.use("/api/v1/orders", orderRouter);
 app.get('/', function (req, res) {
-  console.log('Cookies: ', req.cookies)
+  res.json("backend working")
 })
 
 // Using Error Middleware
