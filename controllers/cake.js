@@ -58,7 +58,8 @@ export const getCakebyId=async (req, res, next) => {
   // Specify the destination folder for storing the uploaded files
   const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-      const destination = path.join(__dirname, '../../cakeshop/public/images');
+      //const destination = path.join(__dirname, '../../cakeshop/public/images');
+       const destination = path.join('E:/projects/Cakeshop webste', 'cakeshop', 'public', 'images');
       cb(null, destination);
     },
     filename: (req, file, cb) => {
@@ -72,7 +73,7 @@ export const getCakebyId=async (req, res, next) => {
   export const uploadController=async(req, res) => {
     upload(req, res, (err) => {
       if (err) {
-        console.error('Error uploading file:', err);
+        console.error('Error uploading fil:', err);
         res.status(500).json({ error: 'Failed to upload file' });
       } else {
         const file = req.file;
