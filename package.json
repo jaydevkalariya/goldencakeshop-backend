@@ -1,4 +1,11 @@
 {
+  "name": "nodeapi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "engines": {
+    "node": ">=14.20.1"
+  },
   "dependencies": {
     "bcrypt": "^5.1.0",
     "cloudinary": "^1.37.1",
