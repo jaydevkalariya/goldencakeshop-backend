@@ -3,7 +3,6 @@ import { Order } from '../models/order.js';
 import {sendMail} from './mail.js';
 
 export const payment=(async (req, res, next) => {
-  console.log("hi")
   const stripee = new Stripe(process.env.STRIPE_SECRET_KEY);
   try {
     const { paymentMethodId, address,time, amount,order } = req.body;

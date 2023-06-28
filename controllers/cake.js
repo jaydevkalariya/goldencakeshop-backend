@@ -1,9 +1,6 @@
 import { Cake } from "../models/cake.js";
-import ErrorHandler from "../middlewares/error.js";
 import multer from "multer";
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
-import path from "path";;
+
 
 import { initializeApp } from "firebase/app";
 import { getStorage, ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
@@ -64,19 +61,7 @@ export const getCakebyId=async (req, res, next) => {
 
 
 
-  // // Specify the destination folder for storing the uploaded files
-  // const storage = multer.diskStorage({
-  //   destination: (req, file, cb) => {
-  //     //const destination = path.join(__dirname, '../../cakeshop/public/images');
-  //      const destination = path.join('E:/projects/Cakeshop webste', 'cakeshop', 'public', 'images');
-  //     cb(null, destination);
-  //   },
-  //   filename: (req, file, cb) => {
-  //     cb(null, Date.now()+file.originalname);
-  //   },
-  // });
-  //for single image
-  // const upload = multer({ storage: storage }).single('image');
+ 
 
 
   const upload = multer({ storage: multer.memoryStorage() }).single("image");
@@ -115,7 +100,6 @@ export const getCakebyId=async (req, res, next) => {
           // Grab the public url
           const downloadURL = await getDownloadURL(snapshot.ref);
   
-          console.log('File successfully uploaded.');
           return res.send({
               message: 'file uploaded to firebase storage',
               filename: req.file.originalname,
@@ -160,4 +144,3 @@ export const getCakebyId=async (req, res, next) => {
 
 
 
-// // Import the functions you need from the SDKs you need
