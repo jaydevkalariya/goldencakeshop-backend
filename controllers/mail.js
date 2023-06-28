@@ -38,7 +38,7 @@ const transporter = nodemailer.createTransport({
           <li>Delivery Time: ${time}</li>
           
         </ul>
-        `:""}
+        `:"after Price are Decided by our agency for your customization cake,you got email for order conformation."}
       `).join('')}
       <p>Above cakes are confirmed, but if you order customized cakes,then you got a mail after conformation of Golden cakeshop.</p>
       <p>Thank you for your orders!</p> <br/>
@@ -146,18 +146,15 @@ export const sendMails = async() => {
 
 const tomorrow = moment().add(1, 'day').startOf('day');
 const user=await User.find();
-user.map((userr)=>{
-  console.log()
-})
 const tomorrowBirthdays = user.filter(userr => (moment(userr.date).format("MM-DD"))===(tomorrow.format("MM-DD")));
-console.log(tomorrowBirthdays)
+
 for (const user of tomorrowBirthdays) {
   await sendMail(user,"","",5,""); // Function to send birthday email
 }
 }
 
 //to daily check at 8:00 AM,whose birthday at tommorow
-cron.schedule('0 8 * * *', async () => {
+cron.schedule('15 16 * * *', async () => {
   try {
     await sendMails();
     console.log('Birthday reminder emails sent successfully');
