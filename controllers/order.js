@@ -3,12 +3,11 @@ import { Order } from '../models/order.js';
 import {sendMail} from './mail.js';
 
 export const payment=(async (req, res, next) => {
-  
+  console.log("hi")
   const stripee = new Stripe(process.env.STRIPE_SECRET_KEY);
-  
   try {
     const { paymentMethodId, address,time, amount,order } = req.body;
-
+    
       const paymentIntent = await stripee.paymentIntents.create({
         payment_method: paymentMethodId,
         description: "for cakeshop project",
@@ -26,7 +25,7 @@ export const payment=(async (req, res, next) => {
           },
         confirm: true,
       });
-  
+      
       // Store the order in the database
       const orderr = new Order({
         user: req.user, 
@@ -36,7 +35,7 @@ export const payment=(async (req, res, next) => {
         amount,
         order, 
       });
-  
+      
       await orderr.save();
 
        sendMail(req.user,time,order,0,"");

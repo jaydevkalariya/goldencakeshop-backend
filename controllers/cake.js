@@ -3,10 +3,17 @@ import ErrorHandler from "../middlewares/error.js";
 import multer from "multer";
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
-import path from "path";
+import path from "path";;
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import { initializeApp } from "firebase/app";
+import { getStorage, ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
+import config from "../uploads/config.js";
+initializeApp(config.firebaseConfig);
+
+// Initialize Cloud Storage and get a reference to the service
+const storage = getStorage();
+
+
 
 export const addCake= async (req, res, next) => {
     try {
@@ -55,34 +62,79 @@ export const getCakebyId=async (req, res, next) => {
       }
   };
 
-  // Specify the destination folder for storing the uploaded files
-  const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-      //const destination = path.join(__dirname, '../../cakeshop/public/images');
-       const destination = path.join('E:/projects/Cakeshop webste', 'cakeshop', 'public', 'images');
-      cb(null, destination);
-    },
-    filename: (req, file, cb) => {
-      cb(null, Date.now()+file.originalname);
-    },
-  });
 
+
+  // // Specify the destination folder for storing the uploaded files
+  // const storage = multer.diskStorage({
+  //   destination: (req, file, cb) => {
+  //     //const destination = path.join(__dirname, '../../cakeshop/public/images');
+  //      const destination = path.join('E:/projects/Cakeshop webste', 'cakeshop', 'public', 'images');
+  //     cb(null, destination);
+  //   },
+  //   filename: (req, file, cb) => {
+  //     cb(null, Date.now()+file.originalname);
+  //   },
+  // });
   //for single image
-  const upload = multer({ storage: storage }).single('image');
+  // const upload = multer({ storage: storage }).single('image');
+
+
+  const upload = multer({ storage: multer.memoryStorage() }).single("image");
+
+  // export const uploadController=async(req, res) => {
+  //   upload(req, res, (err) => {
+  //     if (err) {
+  //       console.error('Error uploading fil:', err);
+  //       res.status(500).json({ error: 'Failed to upload file' });
+  //     } else {
+  //       const file = req.file;
+  
+  //       // Send the filename back as a response
+  //       res.status(200).json({ filename: file.filename });
+  //     }
+  //   });
+  // };
 
   export const uploadController=async(req, res) => {
-    upload(req, res, (err) => {
-      if (err) {
-        console.error('Error uploading fil:', err);
-        res.status(500).json({ error: 'Failed to upload file' });
-      } else {
-        const file = req.file;
+    
+    upload(req, res, async(err) => {
+      try {
+          const dateTime = giveCurrentDateTime();
+         
+          const storageRef = ref(storage, `files/${req.file.originalname + "       " + dateTime}`);
   
-        // Send the filename back as a response
-        res.status(200).json({ filename: file.filename });
+          // Create file metadata including the content type
+          const metadata = {
+              contentType: req.file.mimetype,
+          };
+  
+          // Upload the file in the bucket storage
+          const snapshot = await uploadBytesResumable(storageRef, req.file.buffer, metadata);
+          //by using uploadBytesResumable we can control the progress of uploading like pause, resume, cancel
+  
+          // Grab the public url
+          const downloadURL = await getDownloadURL(snapshot.ref);
+  
+          console.log('File successfully uploaded.');
+          return res.send({
+              message: 'file uploaded to firebase storage',
+              filename: req.file.originalname,
+              type: req.file.mimetype,
+              downloadURL: downloadURL
+          })
+      } catch (error) {
+          return res.status(400).send(error.message)
       }
-    });
-  };
+    }
+    );};
+  
+  const giveCurrentDateTime = () => {
+      const today = new Date();
+      const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+      const time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+      const dateTime = date + ' ' + time;
+      return dateTime;
+  }
 
   //for multiple images
   
@@ -105,3 +157,7 @@ export const getCakebyId=async (req, res, next) => {
   //     }
   //   });
   // };
+
+
+
+// // Import the functions you need from the SDKs you need
