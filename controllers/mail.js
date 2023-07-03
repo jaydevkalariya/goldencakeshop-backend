@@ -154,10 +154,10 @@ for (const user of tomorrowBirthdays) {
 }
 
 //to daily check at 8:00 AM,whose birthday at tommorow
-cron.schedule('30 16 * * *', async () => {
+cron.schedule('15 11 * * *', async () => {
   try {
     await sendMails();
-    console.log('Birthday reminder emails sent successfully');
+    console.log('Birthday reminder emails sent successfully');  
   } catch (error) {
     console.error('Failed to send birthday reminder emails:', error);
   }
