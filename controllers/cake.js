@@ -27,6 +27,7 @@ export const deleteCake=async (req, res, next) => {
     try {
       const _id = req.body.id;
       console.log(_id);
+      // console.log(req.body)
       await Cake.findByIdAndDelete(_id);
       res.sendStatus(204);
     }  catch (error) {
@@ -119,6 +120,30 @@ export const getCakebyId=async (req, res, next) => {
       const dateTime = date + ' ' + time;
       return dateTime;
   }
+
+  //for multiple images
+  const uploads=multer({storage:storage}).array('images',3);
+
+  export const uploadsController= async (req,res)=>{
+     uploads(req,res,(err)=>{
+      if(err){
+        console.err("erroe uploading files:",err);
+        res.status(500).json({error:'Failed to upload files'});
+      }
+      else{
+        const files=req.files;
+        console.log('upload files',files);
+      }
+     })
+  }
+
+
+
+
+
+
+
+
 
   //for multiple images
   

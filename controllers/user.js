@@ -48,6 +48,20 @@ export const getMyProfile = (req, res) => {
   });
 };
 
+export const getNameByEmail = async (req, res) => {
+  const {email}=req.body;
+  let user=await User.findOne({email:email})
+  if(user)
+ {
+  res.status(200).json({
+    success: true,
+    userName: user.name
+  });
+}
+};
+
+
+
 
 export const getAllUsers=async (req, res, next) => {
   try {
@@ -56,7 +70,7 @@ export const getAllUsers=async (req, res, next) => {
 
     // Sort users based on the upcoming birthday
     const sortedUsers = users.sort((userA, userB) => {
-      const birthdateA = moment(userA.date).startOf('day');
+      const birthdateA = moment(userA.date).startOf('day');  
       const birthdateB = moment(userB.date).startOf('day');
      
       // Calculate the upcoming birthday for the current year
@@ -101,6 +115,25 @@ export const logout = (req, res) => {
       success: true,
       user: req.user,
     });
+};
+
+export const changeRole = async (req, res) => {
+  try {
+   
+    const { email } = req.body;
+
+    let user = await User.findOne({ email });
+    user.role="Employee";
+    user.save();
+
+    res.json({
+      success:true,
+      message:"role changed succesfully",
+    })
+
+  } catch (error) {
+    next(error);
+  }
 };
 
 

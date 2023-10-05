@@ -28,6 +28,10 @@ const schema = new mongoose.Schema({
         type:String,
         required:true,
       },
+      egg: {
+        type:String,
+        required:true,
+      },
       featured: {
         type:Boolean,
         required:true,
@@ -40,7 +44,6 @@ const schema = new mongoose.Schema({
         type:[String],
         required:true,
       }
-
   });
   
   export const Cake = mongoose.model("Cake", schema);

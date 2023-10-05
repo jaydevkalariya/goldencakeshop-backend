@@ -21,6 +21,10 @@ const schema = new mongoose.Schema({
       required: true,
       type: String,
     },
+    role:{
+      type:String,
+      default:"isAdmin"
+    },
     createdAt: {
       type: Date,
       default: Date.now,

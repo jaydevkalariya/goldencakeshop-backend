@@ -1,12 +1,14 @@
 import { Stripe } from 'stripe';
 import { Order } from '../models/order.js';
 import {sendMail} from './mail.js';
+import { log } from 'console';
+
 
 export const payment=(async (req, res, next) => {
   const stripee = new Stripe(process.env.STRIPE_SECRET_KEY);
   try {
     const { paymentMethodId, address,time, amount,order } = req.body;
-    
+    console.log(time,address)
       const paymentIntent = await stripee.paymentIntents.create({
         payment_method: paymentMethodId,
         description: "for cakeshop project",
@@ -24,7 +26,6 @@ export const payment=(async (req, res, next) => {
           },
         confirm: true,
       });
-      
       // Store the order in the database
       const orderr = new Order({
         user: req.user, 
@@ -34,10 +35,11 @@ export const payment=(async (req, res, next) => {
         amount,
         order, 
       });
-      
+      // console.log("jk" + req.body)
       await orderr.save();
-
-       sendMail(req.user,time,order,0,"");
+      
+      // console.log("backend");
+      sendMail(req.user,time,order,0,"");
       res.status(200).json({ success:"true", client_secret: paymentIntent.client_secret  });
       
      
@@ -48,6 +50,15 @@ export const payment=(async (req, res, next) => {
 });
 
 export const getAllOrders=async (req, res, next) => {
+  try {
+    const orders = await Order.find();
+    res.json(orders);
+  }  catch (error) {
+      next(error);
+    }
+};
+
+export const getConfirmedOrders=async (req, res, next) => {
   try {
     const orders = await Order.find();
     res.json(orders);
@@ -69,7 +80,7 @@ export const confirmOrder=async (req, res, next) => {
     
     const updatedOrder = await Order.findOneAndUpdate(
       { _id: order._id, 'order._id': suborder._id },
-      { $set: { 'order.$.isConfirmed': true } },
+      { $set: { 'order.$.isConfirmed': "confirm" } },
       { new: true }
     );
   
@@ -80,4 +91,23 @@ export const confirmOrder=async (req, res, next) => {
   }  catch (error) {
       next(error);
     }
+};
+
+//it returns orders for login entity.
+export const getOrdersByUserEmail = async (req, res, next) => {
+  try {
+    const { email } = req.body; // Assuming email is a route parameter
+    const orders = await Order.find({ 'user.email': email });
+
+    if (!orders || orders.length === 0) {
+      return res.status(404).json({ message: 'No orders found for this email.' });
+    }
+    const userOrders = orders.map(order => ({
+      created_at: order.created_at,
+      order: order.order,
+    }));
+    res.json(userOrders);
+  } catch (error) {
+    next(error);
+  }
 };

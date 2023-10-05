@@ -24,6 +24,10 @@ const orderSchema = new mongoose.Schema({
                 type: String,
                 required: true,
               },
+              cakeid: {
+                type: String,
+                required: true,
+              },
               name: {
                 type: String,
               },
@@ -58,8 +62,8 @@ const orderSchema = new mongoose.Schema({
             type: String,
           },
           isConfirmed:{
-            type:Boolean,
-            default:false,
+            type:String,
+            default:"processing",
           }
 
         }

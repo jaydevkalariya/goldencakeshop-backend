@@ -12,6 +12,4 @@ router.get("/:id", getCakebyId);
 
 router.post('/upload', uploadController);
 
-
-
 export default router;
