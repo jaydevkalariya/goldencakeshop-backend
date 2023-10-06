@@ -73,6 +73,13 @@ async function createPdf(order) {
 
   // Set up content
   const content = pdfDoc.getPages()[0];
+  content.drawText(`Order id: ${order.id}`, {
+    x: 200,
+    y: 220,
+    size: 15,
+    font: helveticaFont,
+    color: rgb(0, 0, 0),
+  });
   content.drawText(`Cake Name: ${order.name}`, {
     x: 200,
     y: 200,

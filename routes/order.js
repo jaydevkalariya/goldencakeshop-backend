@@ -1,5 +1,5 @@
 import express from "express";
-import  {payment,getAllOrders,confirmOrder,getOrdersByUserEmail} from "../controllers/order.js";
+import  {payment,getAllOrders,confirmOrder,getOrdersByUserEmail,getAdminOrders} from "../controllers/order.js";
 import { isAuthenticated } from "../middlewares/auth.js";
 import { generateOrderPDFs } from "../controllers/orderPdfGenerator.js";
 const router = express.Router();
@@ -9,6 +9,7 @@ router.get('/allOrders',getAllOrders);
 router.post('/viewOrders',getOrdersByUserEmail);
 router.post('/confirmOrder',confirmOrder);
 router.get('/generatepdf',generateOrderPDFs);
+router.get('/adminOrders',getAdminOrders);
 
 
 export default router;
