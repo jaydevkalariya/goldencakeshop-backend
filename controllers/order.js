@@ -8,7 +8,7 @@ export const payment = (async (req, res, next) => {
   const stripee = new Stripe(process.env.STRIPE_SECRET_KEY);
   try {
     const { paymentMethodId, address, time, amount, order } = req.body;
-    console.log(time, address)
+    
     const paymentIntent = await stripee.paymentIntents.create({
       payment_method: paymentMethodId,
       description: "for cakeshop project",
@@ -26,6 +26,8 @@ export const payment = (async (req, res, next) => {
       },
       confirm: true,
     });
+    
+    console.log("hello")
     // Store the order in the database
     const orderr = new Order({
       user: req.user,
@@ -33,6 +35,7 @@ export const payment = (async (req, res, next) => {
       address,
       time,
       amount,
+      chargeId:paymentIntent.id,
       order,
     });
     // console.log("jk" + req.body)
@@ -104,6 +107,7 @@ export const getOrdersByUserEmail = async (req, res, next) => {
     }
     const userOrders = orders.map(order => ({
       created_at: order.created_at,
+      id:order._id,
       order: order.order,
     }));
     res.json(userOrders);
@@ -130,3 +134,41 @@ export const getAdminOrders = async (req, res, next) => {
     next(error);
   }
 }
+
+
+// Node.js route for handling order cancellations
+export const cancelOrders = async (req, res) => {
+  const { orderId, email } = req.body; // Assuming you send the orderId from the frontend
+
+  try {
+    // Initialize the stripe object with your secret key
+    const stripee = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+    // Check if the order belongs to the requesting user
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    if (order.user.email !== email) {
+      return res.status(403).json({ message: 'Unauthorized to cancel this order' });
+    }
+
+   
+
+   // Refund the payment through Stripe
+    // const refund = await stripee.refunds.create({
+    //   charge: order.chargeId, // The charge ID from the original payment
+    // });
+
+    // Update the order status in your database to reflect the cancellation
+    order.status = 'cancelled';
+    await order.save();
+    console.log("hi")
+    return res.status(200).json({ message: 'Order cancelled successfully' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+

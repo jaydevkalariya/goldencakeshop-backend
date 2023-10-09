@@ -18,6 +18,10 @@ const orderSchema = new mongoose.Schema({
     amount: {
       type: Number,
     },
+    status:{
+      type:String,
+      default:"process",
+    },
     order: [
         {
             id: {
@@ -68,6 +72,10 @@ const orderSchema = new mongoose.Schema({
 
         }
       ],
+      chargeId: {
+        type: String, // Adjust the data type as needed
+        required: false, // Set to true if chargeId is required
+      },
     created_at: {
       type: Date,
       default: Date.now,
